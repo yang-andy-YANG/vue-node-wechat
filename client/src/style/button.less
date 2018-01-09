@@ -1,0 +1,46 @@
+@import "./variables";
+
+.btn {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 15px;
+    border-radius: 5px;
+	line-height: 26px;
+	box-sizing: border-box;
+    height: 38px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    &.btn-default {
+	    color: @f1;
+	    background-color: @pc-1;
+		border-color: @div;
+		&+.btn-default {
+			margin-left: 15px;
+		}
+    }
+
+    &.btn-block {
+		display: block;
+		color: @f1;
+	    background-color: @pc-1;
+		border-color: @div;
+		width: 100%;
+		&+.btn-block {
+			margin-top: 20px;
+		}
+	}
+	&.btn-disabled {
+		background: @btn-background-disabled !important;
+	}
+}
