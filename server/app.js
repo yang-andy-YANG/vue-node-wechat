@@ -1,8 +1,11 @@
 var express = require('express');
 var app = express();
 var crypto = require('crypto');
+const path = require('path')
 
 var token = "vo_weixin_token_S@pChina1";
+
+app.use(express.static(path.join(__dirname, '../client/dist')))
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
@@ -41,7 +44,8 @@ app.get('/wechat', function (req, res) {
   }
 });
 
-var server = app.listen(3000, function () {
+
+var server = app.listen( process.env.PORT || 3000, function () {
   var host = server.address().address;
   var port = server.address().port;
 
