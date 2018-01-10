@@ -3,7 +3,7 @@ var app = express();
 var crypto = require('crypto');
 const path = require('path')
 
-var token = "vo_weixin_token_S@pChina1";
+var token = "dudutaba_weixin_token";
 
 app.use(express.static(path.join(__dirname, '../client/dist')))
 
@@ -21,6 +21,7 @@ app.get('/api/getUser', function (req, res) {
 });
 
 app.get('/wechat', function (req, res) {
+  console.log(req)
   var signature = req.query.signature;
   var timestamp = req.query.timestamp;
   var nonce = req.query.nonce;
