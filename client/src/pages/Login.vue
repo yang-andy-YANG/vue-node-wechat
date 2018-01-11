@@ -31,8 +31,10 @@
             ...mapActions(['getUserInfo']),
             login(){                
                 this.getUserInfo({
-                    userName: this.userName,
-                    password: this.password
+                    params: {
+                        userName: this.userName,
+                        password: this.password
+                    }
                 }).then(()=>{
                     if(this.userInfo.token) {
                         let redirect = decodeURIComponent(this.$route.query.redirect || '/');

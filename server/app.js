@@ -2,48 +2,139 @@ var express = require('express');
 var app = express();
 var crypto = require('crypto');
 const path = require('path')
+var bodyParser = require('body-parser');
+var request = require('request')
 
-var token = "dudutaba_weixin_token";
+var wechat = require('wechat');
+var config = {
+  token: 'dudutaba_weixin_token',
+  appid: 'wx151a3ea2991b62e2',
+  encodingAESKey: 'RCPQndiA3ki4SMbG8tGRdkcYlGpSh0mEZXikVrvSJ9G',
+  checkSignature: true // 可选，默认为true。由于微信公众平台接口调试工具在明文模式下不发送签名，所以如要使用该测试工具，请将其设置为false
+};
+
+const wechat_jssdk = require('wechat-jssdk');
+const wechatConfig = {
+  //set your oauth redirect url, defaults to localhost
+  "wechatRedirectUrl": "http://yourdomain.com/wechat/oauth-callback",
+  //"wechatToken": "wechat_token", //not necessary required
+  "appId": "wx151a3ea2991b62e2",
+  "appSecret": "02fa25c6820dc56648787fdc8103c966",
+}
+const wx = new wechat_jssdk(wechatConfig);
+
+var token,ticket
+
 
 app.use(express.static(path.join(__dirname, '../client/dist')))
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
+// app.get('/', function (req, res) {
+//   res.send('Hello World!');
+// });
+
 
 app.get('/api/getUser', function (req, res) {
   var userInfo = {
     id: 'id',
-    name:'name',
+    name: req.query.userName,
     token: '123321'
   }
   res.send(JSON.stringify(userInfo));
 });
 
-app.get('/wechat', function (req, res) {
-  console.log(req)
-  var signature = req.query.signature;
-  var timestamp = req.query.timestamp;
-  var nonce = req.query.nonce;
-  var echostr = req.query.echostr;
+app.use(express.query());
 
-  /*  加密/校验流程如下： */
-  //1. 将token、timestamp、nonce三个参数进行字典序排序
-  var array = new Array(token,timestamp,nonce);
-  array.sort();
-  var str = array.toString().replace(/,/g,"");
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-  //2. 将三个参数字符串拼接成一个字符串进行sha1加密
-  var sha1Code = crypto.createHash("sha1");
-  var code = sha1Code.update(str,'utf-8').digest("hex");
-
-  //3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
-  if(code===signature){
-      res.send(echostr)
-  }else{
-      res.send("error");
+//公众号功能，签名检查
+app.use('/wechat', wechat(config, function (req, res, next) {
+  // 微信输入信息都在req.weixin上
+  var message = req.weixin;
+  if (message.FromUserName === 'diaosi') {
+    // 回复屌丝(普通回复)
+    res.reply('hehe');
+  } else if (message.FromUserName === 'text') {
+    //你也可以这样回复text类型的信息
+    res.reply({
+      content: 'text object',
+      type: 'text'
+    });
+  } else if (message.FromUserName === 'hehe') {
+    // 回复一段音乐
+    res.reply({
+      type: "music",
+      content: {
+        title: "来段音乐吧",
+        description: "一无所有",
+        musicUrl: "http://mp3.com/xx.mp3",
+        hqMusicUrl: "http://mp3.com/xx.mp3",
+        thumbMediaId: "thisThumbMediaId"
+      }
+    });
+  } else {
+    // 回复高富帅(图文回复)
+    res.reply([
+      {
+        title: '你来我家接我吧',
+        description: '这是女神与高富帅之间的对话',
+        picurl: 'http://nodeapi.cloudfoundry.com/qrcode.jpg',
+        url: 'http://nodeapi.cloudfoundry.com/'
+      }
+    ]);
   }
+  console.log(message)
+}));
+
+app.post('/api/getJsSdk', function(req, res) {
+
+  function access_token() {
+  var token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + wechatConfig.appId + '&secret=' + wechatConfig.appSecret
+  var self = this;
+  request(token_url, function(error, response, body) {
+    if (!error && response.statusCode == 200) {
+       token = JSON.parse(body).access_token;
+       console.log(1)
+       console.log(body)
+       get_jsapi_ticket() 
+    }
+  })
+}
+
+function get_jsapi_ticket() {
+  var jsapi_ticket_url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi';
+  request(jsapi_ticket_url, function(error, response, body) {
+    if (!error && response.statusCode == 200) {
+      ticket = JSON.parse(body).ticket;
+      console.log(2)
+      console.log(ticket)
+    }
+  })
+}
+  // console.log(req.body)
+  var access_token = access_token()
+  // console.log(access_token)
+  // var ticket = get_jsapi_ticket(get_jsapi_ticket)
+  // console.log(ticket)
+  wx.jssdk.getSignature(req.body.url).then(function(signatureDate) {
+    signatureDate.appid = wechatConfig.appId
+    console.log(signatureDate)
+    res.json(signatureDate);
+  });
 });
+
+app.get('/api/oauth', function (req, res) {
+  //得到code，获取用户信息  
+  wx.oauth.getUserInfo(req.query.code)
+          .then(function(userProfile) {
+            console.log(userProfile)
+            res.render("demo", {
+              wechatInfo: userProfile
+            });
+          });
+});
+
+
 
 
 var server = app.listen( process.env.PORT || 3000, function () {
