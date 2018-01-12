@@ -5,6 +5,10 @@ const path = require('path')
 var bodyParser = require('body-parser');
 var request = require('request')
 
+var WechatAPI = require('wechat-api');
+ 
+
+
 var wechat = require('wechat');
 var config = {
   token: 'HelloMachSystems110108017151363',
@@ -22,6 +26,8 @@ const wechatConfig = {
   "appSecret": "8bf0d7c6607349b1e386715b0a232382",
 }
 const wx = new wechat_jssdk(wechatConfig);
+
+var api = new WechatAPI(wechatConfig.appId, wechatConfig.appSecret);
 
 var token,ticket
 
@@ -88,40 +94,52 @@ app.use('/wechat', wechat(config, function (req, res, next) {
 
 app.post('/api/getJsSdk', function(req, res) {
 
-  function access_token() {
-  var token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + wechatConfig.appId + '&secret=' + wechatConfig.appSecret
-  var self = this;
-  request(token_url, function(error, response, body) {
-    if (!error && response.statusCode == 200) {
-       token = JSON.parse(body).access_token;
-       console.log(1)
-       console.log(body)
-       get_jsapi_ticket() 
-    }
-  })
-}
+  // function access_token() {
+  // var token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' + wechatConfig.appId + '&secret=' + wechatConfig.appSecret
+  // var self = this;
+  // request(token_url, function(error, response, body) {
+  //   if (!error && response.statusCode == 200) {
+  //      token = JSON.parse(body).access_token;
+  //      console.log(1)
+  //      console.log(body)
+  //      get_jsapi_ticket() 
+  //   }
+  // })
+  var param = {
+    debug: true,
+    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
+    url: req.body.url
+   };
+   api.getJsConfig(param, function(e,result){
+    console.log(1)
+     console.log(e)
+     console.log(2)
+     console.log(result)
+     res.json(result);
+   });
+})
 
-function get_jsapi_ticket() {
-  var jsapi_ticket_url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi';
-  request(jsapi_ticket_url, function(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      ticket = JSON.parse(body).ticket;
-      console.log(2)
-      console.log(ticket)
-    }
-  })
-}
-  // console.log(req.body)
-  var access_token = access_token()
-  // console.log(access_token)
-  // var ticket = get_jsapi_ticket(get_jsapi_ticket)
-  // console.log(ticket)
-  wx.jssdk.getSignature(req.body.url).then(function(signatureDate) {
-    signatureDate.appid = wechatConfig.appId
-    console.log(signatureDate)
-    res.json(signatureDate);
-  });
-});
+// function get_jsapi_ticket() {
+//   var jsapi_ticket_url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi';
+//   request(jsapi_ticket_url, function(error, response, body) {
+//     if (!error && response.statusCode == 200) {
+//       ticket = JSON.parse(body).ticket;
+//       console.log(2)
+//       console.log(ticket)
+//     }
+//   })
+// }
+//   // console.log(req.body)
+//   var access_token = access_token()
+//   // console.log(access_token)
+//   // var ticket = get_jsapi_ticket(get_jsapi_ticket)
+//   // console.log(ticket)
+//   wx.jssdk.getSignature(req.body.url).then(function(signatureDate) {
+//     signatureDate.appid = wechatConfig.appId
+//     console.log(signatureDate)
+//     res.json(signatureDate);
+//   });
+// });
 
 app.get('/api/oauth', function (req, res) {
   //得到code，获取用户信息  
