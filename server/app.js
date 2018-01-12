@@ -7,9 +7,9 @@ var request = require('request')
 
 var wechat = require('wechat');
 var config = {
-  token: 'dudutaba_weixin_token',
-  appid: 'wx151a3ea2991b62e2',
-  encodingAESKey: 'RCPQndiA3ki4SMbG8tGRdkcYlGpSh0mEZXikVrvSJ9G',
+  token: 'HelloMachSystems110108017151363',
+  appid: 'wx15a5766f2ca5d2ec',
+  encodingAESKey: '2MwsIU8scIzANNKOux6Sd61E6C2VymIkxYKOd8FRGrL',
   checkSignature: true // 可选，默认为true。由于微信公众平台接口调试工具在明文模式下不发送签名，所以如要使用该测试工具，请将其设置为false
 };
 
@@ -18,8 +18,8 @@ const wechatConfig = {
   //set your oauth redirect url, defaults to localhost
   "wechatRedirectUrl": "http://yourdomain.com/wechat/oauth-callback",
   //"wechatToken": "wechat_token", //not necessary required
-  "appId": "wx151a3ea2991b62e2",
-  "appSecret": "02fa25c6820dc56648787fdc8103c966",
+  "appId": "wx15a5766f2ca5d2ec",
+  "appSecret": "8bf0d7c6607349b1e386715b0a232382",
 }
 const wx = new wechat_jssdk(wechatConfig);
 
