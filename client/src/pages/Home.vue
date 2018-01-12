@@ -43,10 +43,11 @@
                     timestamp: wxConfig.timestamp, // 必填，生成签名的时间戳
                     nonceStr: wxConfig.nonceStr, // 必填，生成签名的随机串
                     signature: wxConfig.signature, // 必填，签名，见附录1
-                    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                    jsApiList: wxConfig.jsApiList // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
                 })
                 wx.ready(function () {
 
+			console.log(wx)
                     wx.checkJsApi({
                         jsApiList: ['chooseImage'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
                         success: function(res) {
