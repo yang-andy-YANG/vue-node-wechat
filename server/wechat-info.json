@@ -4,23 +4,4 @@
   },
   "urls": {},
   "oauth": {}
-}02:08.446Z",
-    "accessToken": "5_2mHsL-QZc775Dadl8Ve-MFFynooaOyzIVT3eSYtGuhSNG9csJzek0r9HWzZXQ6ns_fblHWyUira52RjE5Rm5B6vZnZFDtqvAAHU_eAC8yJ3J4gNTXKobXwr0GAHPH6OTAzUOXTeXLfZa3OAeBFKgAAAUYD",
-    "jsapi_ticket": "HoagFKDcsGMVCIY2vOjf9tj0k5iXuBnQhuOEKn_UiAGeL1Awrdw1Ve12v-006n1XUHI-4T3yoYgrIpaJIauhVQ"
-  },
-  "urls": {
-    "http://localhost:8080/": {
-      "jsapi_ticket": "HoagFKDcsGMVCIY2vOjf9tj0k5iXuBnQhuOEKn_UiAGeL1Awrdw1Ve12v-006n1XUHI-4T3yoYgrIpaJIauhVQ",
-      "nonceStr": "83ws6iwpu6i",
-      "timestamp": "1515758528",
-      "url": "http://localhost:8080/",
-      "signature": "1cf2e6f0988d40f3e33723a9586a35a4dfa36749",
-      "accessToken": "5_2mHsL-QZc775Dadl8Ve-MFFynooaOyzIVT3eSYtGuhSNG9csJzek0r9HWzZXQ6ns_fblHWyUira52RjE5Rm5B6vZnZFDtqvAAHU_eAC8yJ3J4gNTXKobXwr0GAHPH6OTAzUOXTeXLfZa3OAeBFKgAAAUYD",
-      "signatureName": "http://localhost:8080/",
-      "createDate": "2018-01-12T12:02:08.446Z",
-      "modifyDate": "2018-01-12T12:02:08.446Z",
-      "updated": true
-    }
-  },
-  "oauth": {}
 }
