@@ -107,7 +107,7 @@ app.post('/api/getJsSdk', function(req, res) {
   // })
   var param = {
     debug: true,
-    jsApiList: ['onMenuShareAppMessage'],
+    jsApiList: ['onMenuShareAppMessage','onMenuShareTimeline'],
     url: req.body.url
    };
    api.getJsConfig(param, function(e,result){
