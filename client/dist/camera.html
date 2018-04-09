@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    </head>
+
+    <body>
+        <div>
+            <button id="open">打开摄像头</button>
+        </div>
+        <div id="main" style="display:none">
+            <label>摄像头</label>
+            <video></video>
+            <label>canvas预览</label>
+            <canvas></canvas>
+            
+            <div>
+                <button id="close">关闭摄像头</button>
+                <button id="snap">截取图像</button>
+                <button id="upload" style="display: none">上传图像</button>
+            </div>
+            <label>生成的图片</label>
+            <img />
+        </div>
+    </body>
+    <script type="text/javascript">
+        
+        var video = document.querySelector('video'),
+            snap = document.querySelector('#snap'),
+            upload = document.querySelector('#upload'),
+            img = document.querySelector('img'),
+            canvas = document.querySelector('canvas'),
+            context = canvas.getContext('2d'),
+            open = document.querySelector('#open'),            
+            close = document.querySelector('#close'),
+            mediaStreamTrack;
+
+        var width = 320, height = 240;
+        video.width = canvas.width = img.width = width;
+        video.height = canvas.height = img.height =  height;
+
+       
+
+        var promisifiedOldGUM = function(constraints) {
+
+            // 第一个拿到getUserMedia，如果存在
+            var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
+
+            // 有些浏览器只是不实现它-返回一个不被拒绝的承诺与一个错误保持一致的接口
+            if (!getUserMedia) {
+                return Promise.reject(new Error('getUserMedia is not implemented in this browser-getUserMedia是不是在这个浏览器实现'));
+            }
+
+            // 否则，调用包在一个旧navigator.getusermedia承诺
+            return new Promise(function(resolve, reject) {
+                getUserMedia.call(navigator, constraints, resolve, reject);
+            });
+
+        }
+
+        // 旧的浏览器可能无法实现mediadevices可言，所以我们设置一个空的对象第一
+        if (navigator.mediaDevices === undefined) {
+            navigator.mediaDevices = {};
+        }
+
+         open.addEventListener('click', function() {
+              // 一些浏览器部分实现mediadevices。我们不能只指定一个对象
+            // 随着它将覆盖现有的性能getUserMedia。.
+            // 在这里，我们就要错过添加getUserMedia财产。.     
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = promisifiedOldGUM;
+            }
+
+            // Prefer camera resolution nearest to 1280x720.
+            var constraints = {
+                audio: false,
+                video: true
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream) {
+                    document.querySelector('#main').style.display = "block";
+                    open.style.display = "none";
+                    mediaStreamTrack = typeof stream.stop === 'function' ? stream : stream.getTracks()[0]; 
+                    video.src = window.URL.createObjectURL(stream);
+                    video.onloadedmetadata = function(e) {
+                        video.play();
+                    };
+                }).catch(function(err) {
+                    console.log(err.name + ": " + err.message);
+                });
+        }, false);
+
+      
+        
+        // 截取图像
+        snap.addEventListener('click', function() {
+            context.drawImage(video, 0, 0, width, height);
+            upload.style.display = "inline-block";
+        }, false);
+
+        // 关闭摄像头
+        close.addEventListener('click', function() {
+            mediaStreamTrack && mediaStreamTrack.stop();
+            open.style.display = "block";
+            document.querySelector('#main').style.display = "none";
+        }, false);
+
+        // 上传截取的图像
+        upload.addEventListener('click', function() {
+            // $.post('/backendurl', {
+            //     snapData: canvas.toDataURL('image/png')
+            // }).done(function(rs) {
+            //     rs = JSON.parse(rs);    
+            //     img.src = rs.imgUrl;
+            // }).fail(function(err) {
+            
+            // });
+            img.src = canvas.toDataURL('image/png');
+            console.log('可以将canvas转成base64，把base64传给后台，后台保存base64到数据，返回操作状态')
+            console.log('或者将canvas转成base64，把base64传给后台，后台保存图片到文件，把文件地址返回')
+            console.log('也可以以二进制流的方式传递')
+            upload.style.display = "none";
+        }, false);
+
+    </script>
+
+</html>
